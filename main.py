@@ -2,6 +2,7 @@ import disnake, aiohttp, asyncio, aiofiles, aiofiles.os
 from disnake.ext import commands
 from collections import Counter
 from datetime import datetime
+from aiohttp import web
 from config import devservers, devids, bottoken, roblosecurity
 import ijson, json, time
 
@@ -14,6 +15,19 @@ e = {"mag": "https://em-content.zobj.net/source/whatsapp/352/magnifying-glass-ti
 
 squarebadgelist = json.loads(open("squarebadges.json").read())
 valuablelist = json.loads(open("valuableids.json").read())
+
+async def handle(request):
+    return web.Response(text="hi chat 👋")
+
+async def keep_alive():
+    app = web.Application()
+    app.router.add_get("/", handle)
+
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, '0.0.0.0', 8000)
+
+    await site.start()
 
 async def upload_list(filename):
     data = aiohttp.FormData()
@@ -381,4 +395,8 @@ async def cancelcmd(inter, messageid: str = commands.Param(autocomplete=autocomp
     tasks[int(messageid)]["status"] = "canceled"
     await inter.response.send_message(f"canceled {tasks[int(messageid)]['message'].jump_url} {tasks[int(messageid)]['interaction'].author.mention} <:dave:1180190285268013106>", ephemeral=True)
 
-bot.run(bottoken)
+loop = asyncio.get_event_loop()
+
+loop.create_task(keep_alive())
+loop.create_task(bot.start(bottoken))
+loop.run_forever()
