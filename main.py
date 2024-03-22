@@ -61,7 +61,7 @@ async def find_badges(namesearch: list = [], descriptionsearch: list = [], games
                                 if filt.startswith("-"):
                                     filt = filt[1:]
                                     if filt in string: 
-                                        rr = [False]
+                                        r = [False]
                                         break
                                 elif len(filt.split('"')) > 2:
                                     filt = filt.split('"')[1]
@@ -71,8 +71,6 @@ async def find_badges(namesearch: list = [], descriptionsearch: list = [], games
                                     rr.append(filt in string)
                             if len(rr) != 0:
                                 r.append(any(rr))
-                            else:
-                                r.append(False)
 
                         if all(r):
                             real[record["id"]] = {"placeid": record['awardingUniverse']["rootPlaceId"], "badgename": record['name'], "universeid": record["awardingUniverse"]["id"], "placename": record["awardingUniverse"]["name"]}
